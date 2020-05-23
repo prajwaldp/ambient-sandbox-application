@@ -4,7 +4,11 @@ project(Sandbox VERSION 1.0
                 DESCRIPTION "A sandbox application using the Ambient game engine"
                 LANGUAGES CXX)
 
+include(../Engine/build/conanbuildinfo.cmake)  # Includes the contents of the conanbuildinfo.cmake file.
+conan_basic_setup(KEEP_RPATHS)  # This is a macro defined in the above file
+
 add_executable(app src/app.cpp)
 target_include_directories(app PUBLIC ../Engine/include/)
-target_link_directories(app PUBLIC ../Engine/build/)
-target_link_libraries(app PUBLIC ambient)
+target_link_directories(app PUBLIC ../Engine/build/lib)
+target_link_libraries(app ambient ${CONAN_LIBS})
+target_compile_features(app PUBLIC cxx_std_11)
