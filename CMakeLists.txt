@@ -5,6 +5,8 @@ project(Sandbox VERSION 1.0
                 LANGUAGES CXX)
 
 include(../Engine/build/conanbuildinfo.cmake)  # Includes the contents of the conanbuildinfo.cmake file.
+
+# https://docs.conan.io/en/latest/howtos/manage_shared_libraries/rpaths.html
 conan_basic_setup(KEEP_RPATHS)  # This is a macro defined in the above file
 
 add_executable(app src/app.cpp)
