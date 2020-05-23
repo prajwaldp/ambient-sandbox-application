@@ -1,4 +1,4 @@
-#include "application.h"
+#include "ambient.h"
 
 class SandboxApp : public Ambient::Application {
  public:
@@ -6,9 +6,4 @@ class SandboxApp : public Ambient::Application {
   ~SandboxApp() {}
 };
 
-int main() {
-  SandboxApp* my_app = new SandboxApp();
-  my_app->Run();
-  delete my_app;
-  return 0;
-}
+Ambient::Application* Ambient::CreateApplication() { return new SandboxApp; }
