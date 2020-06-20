@@ -5,7 +5,7 @@
 class MyLayer : public Ambient::Layer
 {
   public:
-    MyLayer() : Layer("My Layer"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)
+    MyLayer() : Layer("My Layer"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f), m_CameraPosition(0.0f)
     {
         /**
          * Draw a triangle
@@ -148,8 +148,8 @@ class MyLayer : public Ambient::Layer
         Ambient::RenderCommand::SetClearColor();
         Ambient::RenderCommand::Clear();
 
-        m_Camera.SetPosition({0.5f, 0.5f, 0.0f});
-        m_Camera.SetRotation(45.0f);
+        m_Camera.SetPosition(m_CameraPosition);
+        m_Camera.SetRotation(0.0f);
 
         Ambient::Renderer::BeginScene(m_Camera);
         Ambient::Renderer::Submit(m_SquareShader, m_SquareVertexArray);
@@ -159,9 +159,35 @@ class MyLayer : public Ambient::Layer
         Ambient::Renderer::Flush();
     }
 
-    void OnEvent(Ambient::Event::Event &event) override
+    bool OnKeyPressedEvent(Ambient::Event::KeyPressedEvent& event)
     {
-        AM_TRACE("{0}", event.ToString());
+        if (event.GetKeyCode() == AM_KEY_LEFT)
+        {
+            m_CameraPosition.x -= m_CameraSpeed;
+        }
+
+        if (event.GetKeyCode() == AM_KEY_RIGHT)
+        {
+            m_CameraPosition.x += m_CameraSpeed;
+        }
+
+        if (event.GetKeyCode() == AM_KEY_UP)
+        {
+            m_CameraPosition.y += m_CameraSpeed;
+        }
+
+        if (event.GetKeyCode() == AM_KEY_DOWN)
+        {
+            m_CameraPosition.y -= m_CameraSpeed;
+        }
+        return false;
+    }
+
+    void OnEvent(Ambient::Event::Event& event) override
+    {
+        Ambient::Event::EventDispatcher dispatcher(event);
+        dispatcher.Dispatch<Ambient::Event::KeyPressedEvent>(
+            std::bind(&MyLayer::OnKeyPressedEvent, this, std::placeholders::_1));
     }
 
   private:
@@ -172,6 +198,8 @@ class MyLayer : public Ambient::Layer
     std::shared_ptr<Ambient::VertexArray> m_SquareVertexArray;
 
     Ambient::OrthographicCamera m_Camera;
+    glm::vec3 m_CameraPosition;
+    float m_CameraSpeed = 0.1f;
 };
 
 class SandboxApp : public Ambient::Application
@@ -187,7 +215,7 @@ class SandboxApp : public Ambient::Application
     }
 };
 
-Ambient::Application *Ambient::CreateApplication()
+Ambient::Application* Ambient::CreateApplication()
 {
     auto app = new SandboxApp();
     return app;
