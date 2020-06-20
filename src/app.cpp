@@ -1,11 +1,11 @@
 #include "Ambient.h"
 
-#include <iostream>
+#include "glm/gtc/matrix_transform.hpp"
 
 class MyLayer : public Ambient::Layer
 {
   public:
-    MyLayer() : Layer("My Layer"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f), m_CameraPosition(0.0f)
+    MyLayer() : Layer("My Layer"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f), m_CameraPosition(0.0f), m_SquarePosition(0.0f)
     {
         /**
          * Draw a triangle
@@ -86,6 +86,7 @@ class MyLayer : public Ambient::Layer
             layout(location = 1) in vec4 a_Color;
 
             uniform mat4 u_ViewProjection;
+            uniform mat4 u_Transform;
 
             out vec3 v_Position;
             out vec4 v_Color;
@@ -93,7 +94,7 @@ class MyLayer : public Ambient::Layer
             void main() {
                 v_Position = a_Position;
                 v_Color = a_Color;
-                gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
+                gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
             }
         )";
 
@@ -119,12 +120,13 @@ class MyLayer : public Ambient::Layer
             layout(location = 0) in vec3 a_Position;
 
             uniform mat4 u_ViewProjection;
+            uniform mat4 u_Transform;
 
             out vec3 v_Position;
 
             void main() {
                 v_Position = a_Position;
-                gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
+                gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
             }
         )";
 
@@ -169,6 +171,28 @@ class MyLayer : public Ambient::Layer
         }
 
         /**
+         * Square Position Control
+         **/
+
+        if (Ambient::Input::IsKeyPressed(AM_KEY_J))
+        {
+            m_SquarePosition.x -= m_SquareSpeed * time;
+        }
+        else if (Ambient::Input::IsKeyPressed(AM_KEY_L))
+        {
+            m_SquarePosition.x += m_SquareSpeed * time;
+        }
+
+        if (Ambient::Input::IsKeyPressed(AM_KEY_I))
+        {
+            m_SquarePosition.y += m_SquareSpeed * time;
+        }
+        else if (Ambient::Input::IsKeyPressed(AM_KEY_K))
+        {
+            m_SquarePosition.y -= m_SquareSpeed * time;
+        }
+
+        /**
          * Rotation Control
          **/
 
@@ -188,7 +212,10 @@ class MyLayer : public Ambient::Layer
         m_Camera.SetRotation(m_CameraRotation);
 
         Ambient::Renderer::BeginScene(m_Camera);
-        Ambient::Renderer::Submit(m_SquareShader, m_SquareVertexArray);
+
+        glm::mat4 transform = glm::translate(glm::mat4(1.0), m_SquarePosition);
+
+        Ambient::Renderer::Submit(m_SquareShader, m_SquareVertexArray, transform);
         Ambient::Renderer::Submit(m_Shader, m_VertexArray);
         Ambient::Renderer::EndScene();
 
@@ -205,6 +232,8 @@ class MyLayer : public Ambient::Layer
 
     std::shared_ptr<Ambient::Shader> m_SquareShader;
     std::shared_ptr<Ambient::VertexArray> m_SquareVertexArray;
+    glm::vec3 m_SquarePosition;
+    float m_SquareSpeed = 3.0f;
 
     Ambient::OrthographicCamera m_Camera;
     glm::vec3 m_CameraPosition;
