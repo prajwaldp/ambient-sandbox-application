@@ -145,6 +145,26 @@ class MyLayer : public Ambient::Layer
 
     void OnUpdate() override
     {
+        if (Ambient::Input::IsKeyPressed(AM_KEY_LEFT))
+        {
+            m_CameraPosition.x -= m_CameraSpeed;
+        }
+
+        if (Ambient::Input::IsKeyPressed(AM_KEY_RIGHT))
+        {
+            m_CameraPosition.x += m_CameraSpeed;
+        }
+
+        if (Ambient::Input::IsKeyPressed(AM_KEY_UP))
+        {
+            m_CameraPosition.y += m_CameraSpeed;
+        }
+
+        if (Ambient::Input::IsKeyPressed(AM_KEY_DOWN))
+        {
+            m_CameraPosition.y -= m_CameraSpeed;
+        }
+
         Ambient::RenderCommand::SetClearColor();
         Ambient::RenderCommand::Clear();
 
@@ -159,35 +179,8 @@ class MyLayer : public Ambient::Layer
         Ambient::Renderer::Flush();
     }
 
-    bool OnKeyPressedEvent(Ambient::Event::KeyPressedEvent& event)
-    {
-        if (event.GetKeyCode() == AM_KEY_LEFT)
-        {
-            m_CameraPosition.x -= m_CameraSpeed;
-        }
-
-        if (event.GetKeyCode() == AM_KEY_RIGHT)
-        {
-            m_CameraPosition.x += m_CameraSpeed;
-        }
-
-        if (event.GetKeyCode() == AM_KEY_UP)
-        {
-            m_CameraPosition.y += m_CameraSpeed;
-        }
-
-        if (event.GetKeyCode() == AM_KEY_DOWN)
-        {
-            m_CameraPosition.y -= m_CameraSpeed;
-        }
-        return false;
-    }
-
     void OnEvent(Ambient::Event::Event& event) override
     {
-        Ambient::Event::EventDispatcher dispatcher(event);
-        dispatcher.Dispatch<Ambient::Event::KeyPressedEvent>(
-            std::bind(&MyLayer::OnKeyPressedEvent, this, std::placeholders::_1));
     }
 
   private:
