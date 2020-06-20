@@ -145,31 +145,45 @@ class MyLayer : public Ambient::Layer
 
     void OnUpdate() override
     {
+        /**
+         * Position Control
+         **/
+
         if (Ambient::Input::IsKeyPressed(AM_KEY_LEFT))
         {
             m_CameraPosition.x -= m_CameraSpeed;
         }
-
-        if (Ambient::Input::IsKeyPressed(AM_KEY_RIGHT))
+        else if (Ambient::Input::IsKeyPressed(AM_KEY_RIGHT))
         {
             m_CameraPosition.x += m_CameraSpeed;
         }
-
-        if (Ambient::Input::IsKeyPressed(AM_KEY_UP))
+        else if (Ambient::Input::IsKeyPressed(AM_KEY_UP))
         {
             m_CameraPosition.y += m_CameraSpeed;
         }
-
-        if (Ambient::Input::IsKeyPressed(AM_KEY_DOWN))
+        else if (Ambient::Input::IsKeyPressed(AM_KEY_DOWN))
         {
             m_CameraPosition.y -= m_CameraSpeed;
+        }
+
+        /**
+         * Rotation Control
+         **/
+
+        if (Ambient::Input::IsKeyPressed(AM_KEY_A))
+        {
+            m_CameraRotation += m_CameraRotationSpeed;
+        }
+        else if (Ambient::Input::IsKeyPressed(AM_KEY_D))
+        {
+            m_CameraRotation -= m_CameraRotationSpeed;
         }
 
         Ambient::RenderCommand::SetClearColor();
         Ambient::RenderCommand::Clear();
 
         m_Camera.SetPosition(m_CameraPosition);
-        m_Camera.SetRotation(0.0f);
+        m_Camera.SetRotation(m_CameraRotation);
 
         Ambient::Renderer::BeginScene(m_Camera);
         Ambient::Renderer::Submit(m_SquareShader, m_SquareVertexArray);
@@ -192,7 +206,10 @@ class MyLayer : public Ambient::Layer
 
     Ambient::OrthographicCamera m_Camera;
     glm::vec3 m_CameraPosition;
+    float m_CameraRotation = 0.0f;
+
     float m_CameraSpeed = 0.1f;
+    float m_CameraRotationSpeed = 0.4f;
 };
 
 class SandboxApp : public Ambient::Application
