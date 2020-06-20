@@ -143,27 +143,29 @@ class MyLayer : public Ambient::Layer
         m_SquareShader.reset(new Ambient::Shader(squareVertexShaderSrc, squareFragmentShaderSrc));
     }
 
-    void OnUpdate() override
+    void OnUpdate(Ambient::Timestep ts) override
     {
+        float time = ts;
         /**
          * Position Control
          **/
 
         if (Ambient::Input::IsKeyPressed(AM_KEY_LEFT))
         {
-            m_CameraPosition.x -= m_CameraSpeed;
+            m_CameraPosition.x -= m_CameraSpeed * time;
         }
         else if (Ambient::Input::IsKeyPressed(AM_KEY_RIGHT))
         {
-            m_CameraPosition.x += m_CameraSpeed;
+            m_CameraPosition.x += m_CameraSpeed * time;
         }
-        else if (Ambient::Input::IsKeyPressed(AM_KEY_UP))
+
+        if (Ambient::Input::IsKeyPressed(AM_KEY_UP))
         {
-            m_CameraPosition.y += m_CameraSpeed;
+            m_CameraPosition.y += m_CameraSpeed * time;
         }
         else if (Ambient::Input::IsKeyPressed(AM_KEY_DOWN))
         {
-            m_CameraPosition.y -= m_CameraSpeed;
+            m_CameraPosition.y -= m_CameraSpeed * time;
         }
 
         /**
@@ -172,11 +174,11 @@ class MyLayer : public Ambient::Layer
 
         if (Ambient::Input::IsKeyPressed(AM_KEY_A))
         {
-            m_CameraRotation += m_CameraRotationSpeed;
+            m_CameraRotation += m_CameraRotationSpeed * time;
         }
         else if (Ambient::Input::IsKeyPressed(AM_KEY_D))
         {
-            m_CameraRotation -= m_CameraRotationSpeed;
+            m_CameraRotation -= m_CameraRotationSpeed * time;
         }
 
         Ambient::RenderCommand::SetClearColor();
@@ -208,8 +210,8 @@ class MyLayer : public Ambient::Layer
     glm::vec3 m_CameraPosition;
     float m_CameraRotation = 0.0f;
 
-    float m_CameraSpeed = 0.1f;
-    float m_CameraRotationSpeed = 0.4f;
+    float m_CameraSpeed = 5.0f;          // 5 units per second
+    float m_CameraRotationSpeed = 90.0f; // 90 degrees per second
 };
 
 class SandboxApp : public Ambient::Application
