@@ -24,7 +24,7 @@ class MyLayer : public Ambient::Layer
 
         m_VertexArray.reset(Ambient::VertexArray::Create());
 
-        std::shared_ptr<Ambient::VertexBuffer> triangleVertexBuffer;
+        Ambient::Ref<Ambient::VertexBuffer> triangleVertexBuffer;
         triangleVertexBuffer.reset(Ambient::VertexBuffer::Create(triangleVertices, sizeof(triangleVertices)));
 
         Ambient::BufferLayout layout = {{Ambient::ShaderDataType::Float3, "a_Position"},
@@ -33,7 +33,7 @@ class MyLayer : public Ambient::Layer
         m_VertexArray->AddVertexBuffer(triangleVertexBuffer);
 
         uint32_t indices[3] = {0, 1, 2};
-        std::shared_ptr<Ambient::IndexBuffer> triangleIndexBuffer;
+        Ambient::Ref<Ambient::IndexBuffer> triangleIndexBuffer;
         triangleIndexBuffer.reset(Ambient::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
         m_VertexArray->SetIndexBuffer(triangleIndexBuffer);
 
@@ -52,7 +52,7 @@ class MyLayer : public Ambient::Layer
 
         m_SquareVertexArray.reset(Ambient::VertexArray::Create());
 
-        std::shared_ptr<Ambient::VertexBuffer> squareVertexBuffer;
+        Ambient::Ref<Ambient::VertexBuffer> squareVertexBuffer;
         squareVertexBuffer.reset(Ambient::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
 
         Ambient::BufferLayout squareLayout = {{Ambient::ShaderDataType::Float3, "a_Position"}};
@@ -60,7 +60,7 @@ class MyLayer : public Ambient::Layer
         m_SquareVertexArray->AddVertexBuffer(squareVertexBuffer);
 
         uint32_t squareIndices[6] = {0, 1, 2, 2, 3, 0};
-        std::shared_ptr<Ambient::IndexBuffer> squareIndexBuffer;
+        Ambient::Ref<Ambient::IndexBuffer> squareIndexBuffer;
         squareIndexBuffer.reset(Ambient::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
         m_SquareVertexArray->SetIndexBuffer(squareIndexBuffer);
 
@@ -111,8 +111,8 @@ class MyLayer : public Ambient::Layer
             }
         )";
 
-        m_Shader.reset(new Ambient::Shader(vertexShaderSrc, fragmentShaderSrc));
-        // instead of m_Shader = std::make_unique<Ambient::Shader>()
+        m_Shader.reset(Ambient::Shader::Create(vertexShaderSrc, fragmentShaderSrc));
+        // instead of m_Shader = std::make_unique<Ambient::Shader::Create>()
 
         std::string squareVertexShaderSrc = R"(
             #version 410 core
@@ -136,13 +136,15 @@ class MyLayer : public Ambient::Layer
             layout(location = 0) out vec4 color;
 
             in vec3 v_Position;
+            uniform vec4 u_Color;
 
             void main() {
-                color = vec4(0.2, 0.1, 0.98, 1.0);
+                color = u_Color;
             }
         )";
 
-        m_SquareShader.reset(new Ambient::Shader(squareVertexShaderSrc, squareFragmentShaderSrc));
+        m_SquareShader.reset(Ambient::Shader::Create(squareVertexShaderSrc, squareFragmentShaderSrc));
+        m_FlatColorShader.reset(Ambient::Shader::Create(squareVertexShaderSrc, squareFragmentShaderSrc));
     }
 
     void OnUpdate(Ambient::Timestep ts) override
@@ -213,9 +215,25 @@ class MyLayer : public Ambient::Layer
 
         Ambient::Renderer::BeginScene(m_Camera);
 
-        glm::mat4 transform = glm::translate(glm::mat4(1.0), m_SquarePosition);
+        glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.05f));
 
-        Ambient::Renderer::Submit(m_SquareShader, m_SquareVertexArray, transform);
+        glm::vec4 red(0.8f, 0.2f, 0.2f, 1.0f);
+        glm::vec4 blue(0.2f, 0.2f, 0.8f, 1.0f);
+        glm::vec4 green(0.2f, 0.8f, 0.2f, 1.0f);
+
+        std::dynamic_pointer_cast<Ambient::OpenGLShader>(m_FlatColorShader)->Bind();
+        std::dynamic_pointer_cast<Ambient::OpenGLShader>(m_FlatColorShader)->UploadUniformFloat4("u_Color", red);
+
+        for (int y = 0; y < 5; y++)
+        {
+            for (int x = 0; x < 5; x++)
+            {
+                glm::vec3 pos(x * 0.11f, y * 0.11f, 0.0f);
+                glm::mat4 transform = glm::translate(glm::mat4(1.0), pos) * scale;
+                Ambient::Renderer::Submit(m_FlatColorShader, m_SquareVertexArray, transform);
+            }
+        }
+
         Ambient::Renderer::Submit(m_Shader, m_VertexArray);
         Ambient::Renderer::EndScene();
 
@@ -227,11 +245,14 @@ class MyLayer : public Ambient::Layer
     }
 
   private:
-    std::shared_ptr<Ambient::Shader> m_Shader;
-    std::shared_ptr<Ambient::VertexArray> m_VertexArray;
+    Ambient::Ref<Ambient::Shader> m_FlatColorShader;
 
-    std::shared_ptr<Ambient::Shader> m_SquareShader;
-    std::shared_ptr<Ambient::VertexArray> m_SquareVertexArray;
+    Ambient::Ref<Ambient::Shader> m_Shader;
+    Ambient::Ref<Ambient::VertexArray> m_VertexArray;
+
+    Ambient::Ref<Ambient::Shader> m_SquareShader;
+    Ambient::Ref<Ambient::VertexArray> m_SquareVertexArray;
+
     glm::vec3 m_SquarePosition;
     float m_SquareSpeed = 3.0f;
 
