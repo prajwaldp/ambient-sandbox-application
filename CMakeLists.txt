@@ -13,9 +13,11 @@ include(../Engine/build/conanbuildinfo.cmake)  # Includes the contents of the co
 # https://docs.conan.io/en/latest/howtos/manage_shared_libraries/rpaths.html
 conan_basic_setup(KEEP_RPATHS)  # This is a macro defined in the above file
 
-add_executable(app src/App.cpp src/layers/SquareAndTriangle.cpp)
+add_executable(app
+               src/App.cpp
+               src/layers/SquareAndTriangle.cpp
+               src/layers/SandboxApp2D.cpp)
 
 target_include_directories(app PUBLIC ../Engine/include/ ./include/)
 target_link_directories(app PUBLIC ../Engine/build/lib)
 target_link_libraries(app ambient ${CONAN_LIBS})
-target_compile_features(app PUBLIC cxx_std_11)
