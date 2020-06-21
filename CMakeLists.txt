@@ -4,6 +4,10 @@ project(Sandbox VERSION 1.0
                 DESCRIPTION "A sandbox application using the Ambient game engine"
                 LANGUAGES CXX)
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF) #...without compiler extensions like gnu++11
+
 include(../Engine/build/conanbuildinfo.cmake)  # Includes the contents of the conanbuildinfo.cmake file.
 
 # https://docs.conan.io/en/latest/howtos/manage_shared_libraries/rpaths.html
