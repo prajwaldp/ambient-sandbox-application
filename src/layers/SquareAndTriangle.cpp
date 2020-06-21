@@ -17,10 +17,10 @@ SquareAndTriangleLayer::SquareAndTriangleLayer() : Layer("My Layer"), m_CameraCo
     };
     // clang-format on
 
-    m_TriangleVertexArray.reset(Ambient::VertexArray::Create());
+    m_TriangleVertexArray = Ambient::VertexArray::Create();
 
     Ambient::Ref<Ambient::VertexBuffer> triangleVertexBuffer;
-    triangleVertexBuffer.reset(Ambient::VertexBuffer::Create(triangleVertices, sizeof(triangleVertices)));
+    triangleVertexBuffer = Ambient::VertexBuffer::Create(triangleVertices, sizeof(triangleVertices));
 
     Ambient::BufferLayout layout = {{ Ambient::ShaderDataType::Float3, "a_Position" },
                                     { Ambient::ShaderDataType::Float4, "a_Color" }};
@@ -29,7 +29,7 @@ SquareAndTriangleLayer::SquareAndTriangleLayer() : Layer("My Layer"), m_CameraCo
 
     uint32_t indices[3] = { 0, 1, 2 };
     Ambient::Ref<Ambient::IndexBuffer> triangleIndexBuffer;
-    triangleIndexBuffer.reset(Ambient::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
+    triangleIndexBuffer = Ambient::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t));
     m_TriangleVertexArray->SetIndexBuffer(triangleIndexBuffer);
 
     /**
@@ -45,10 +45,10 @@ SquareAndTriangleLayer::SquareAndTriangleLayer() : Layer("My Layer"), m_CameraCo
     };
     // clang-format on
 
-    m_SquareVertexArray.reset(Ambient::VertexArray::Create());
+    m_SquareVertexArray = Ambient::VertexArray::Create();
 
     Ambient::Ref<Ambient::VertexBuffer> squareVertexBuffer;
-    squareVertexBuffer.reset(Ambient::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
+    squareVertexBuffer = Ambient::VertexBuffer::Create(squareVertices, sizeof(squareVertices));
 
     Ambient::BufferLayout squareLayout = {{ Ambient::ShaderDataType::Float3, "a_Position" },
                                           { Ambient::ShaderDataType::Float2, "a_TexCoord" }};
@@ -57,7 +57,7 @@ SquareAndTriangleLayer::SquareAndTriangleLayer() : Layer("My Layer"), m_CameraCo
 
     uint32_t squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
     Ambient::Ref<Ambient::IndexBuffer> squareIndexBuffer;
-    squareIndexBuffer.reset(Ambient::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
+    squareIndexBuffer = Ambient::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t));
     m_SquareVertexArray->SetIndexBuffer(squareIndexBuffer);
 
     m_FlatColor1Shader = Ambient::Shader::Create("./assets/shaders/FlatColor1.glsl");
