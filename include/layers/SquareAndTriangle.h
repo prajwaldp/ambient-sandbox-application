@@ -5,12 +5,14 @@
 
 class SquareAndTriangleLayer : public Ambient::Layer
 {
-  public:
+public:
     SquareAndTriangleLayer();
+
     void OnUpdate(Ambient::Timestep ts) override;
+
     void OnEvent(Ambient::Event& e) override;
 
-  private:
+private:
     // Ambient::ShaderLibrary m_ShaderLibrary;
     Ambient::Ref<Ambient::Shader> m_FlatColor1Shader, m_FlatColor2Shader, m_TextureShader;
     Ambient::Ref<Ambient::Texture2D> m_Texture;

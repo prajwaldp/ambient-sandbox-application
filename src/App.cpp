@@ -6,7 +6,7 @@
 
 class SandboxApp : public Ambient::Application
 {
-  public:
+public:
     SandboxApp()
     {
         // PushLayer(new SquareAndTriangleLayer());

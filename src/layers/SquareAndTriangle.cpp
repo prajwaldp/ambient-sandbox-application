@@ -11,9 +11,9 @@ SquareAndTriangleLayer::SquareAndTriangleLayer() : Layer("My Layer"), m_CameraCo
 
     // clang-format off
     float triangleVertices[3 * 7] = {
-        -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-         0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-         0.0f,  0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+            -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+            0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+            0.0f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
     };
     // clang-format on
 
@@ -22,12 +22,12 @@ SquareAndTriangleLayer::SquareAndTriangleLayer() : Layer("My Layer"), m_CameraCo
     Ambient::Ref<Ambient::VertexBuffer> triangleVertexBuffer;
     triangleVertexBuffer.reset(Ambient::VertexBuffer::Create(triangleVertices, sizeof(triangleVertices)));
 
-    Ambient::BufferLayout layout = {{Ambient::ShaderDataType::Float3, "a_Position"},
-                                    {Ambient::ShaderDataType::Float4, "a_Color"}};
+    Ambient::BufferLayout layout = {{ Ambient::ShaderDataType::Float3, "a_Position" },
+                                    { Ambient::ShaderDataType::Float4, "a_Color" }};
     triangleVertexBuffer->SetLayout(layout);
     m_TriangleVertexArray->AddVertexBuffer(triangleVertexBuffer);
 
-    uint32_t indices[3] = {0, 1, 2};
+    uint32_t indices[3] = { 0, 1, 2 };
     Ambient::Ref<Ambient::IndexBuffer> triangleIndexBuffer;
     triangleIndexBuffer.reset(Ambient::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
     m_TriangleVertexArray->SetIndexBuffer(triangleIndexBuffer);
@@ -38,10 +38,10 @@ SquareAndTriangleLayer::SquareAndTriangleLayer() : Layer("My Layer"), m_CameraCo
 
     // clang-format off
     float squareVertices[5 * 4] = {
-        -0.75f, -0.75f, 0.0f, 0.0f, 0.0f,
-         0.75f, -0.75f, 0.0f, 1.0f, 0.0f,
-         0.75f,  0.75f, 0.0f, 1.0f, 1.0f,
-        -0.75f,  0.75f, 0.0f, 0.0f, 1.0f,
+            -0.75f, -0.75f, 0.0f, 0.0f, 0.0f,
+            0.75f, -0.75f, 0.0f, 1.0f, 0.0f,
+            0.75f, 0.75f, 0.0f, 1.0f, 1.0f,
+            -0.75f, 0.75f, 0.0f, 0.0f, 1.0f,
     };
     // clang-format on
 
@@ -50,12 +50,12 @@ SquareAndTriangleLayer::SquareAndTriangleLayer() : Layer("My Layer"), m_CameraCo
     Ambient::Ref<Ambient::VertexBuffer> squareVertexBuffer;
     squareVertexBuffer.reset(Ambient::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
 
-    Ambient::BufferLayout squareLayout = {{Ambient::ShaderDataType::Float3, "a_Position"},
-                                          {Ambient::ShaderDataType::Float2, "a_TexCoord"}};
+    Ambient::BufferLayout squareLayout = {{ Ambient::ShaderDataType::Float3, "a_Position" },
+                                          { Ambient::ShaderDataType::Float2, "a_TexCoord" }};
     squareVertexBuffer->SetLayout(squareLayout);
     m_SquareVertexArray->AddVertexBuffer(squareVertexBuffer);
 
-    uint32_t squareIndices[6] = {0, 1, 2, 2, 3, 0};
+    uint32_t squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
     Ambient::Ref<Ambient::IndexBuffer> squareIndexBuffer;
     squareIndexBuffer.reset(Ambient::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
     m_SquareVertexArray->SetIndexBuffer(squareIndexBuffer);
@@ -132,7 +132,7 @@ void SquareAndTriangleLayer::OnUpdate(Ambient::Timestep ts)
 
     // Triangle
     Ambient::Renderer::Submit(m_FlatColor1Shader, m_TriangleVertexArray,
-                              glm::translate(glm::mat4(1.0), m_TrianglePosition));
+            glm::translate(glm::mat4(1.0), m_TrianglePosition));
     Ambient::Renderer::EndScene();
 
     // Texture Square
