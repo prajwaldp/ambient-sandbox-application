@@ -22,7 +22,7 @@ class MyLayer : public Ambient::Layer
         };
         // clang-format on
 
-        m_VertexArray.reset(Ambient::VertexArray::Create());
+        m_TriangleVertexArray.reset(Ambient::VertexArray::Create());
 
         Ambient::Ref<Ambient::VertexBuffer> triangleVertexBuffer;
         triangleVertexBuffer.reset(Ambient::VertexBuffer::Create(triangleVertices, sizeof(triangleVertices)));
@@ -30,23 +30,23 @@ class MyLayer : public Ambient::Layer
         Ambient::BufferLayout layout = {{Ambient::ShaderDataType::Float3, "a_Position"},
                                         {Ambient::ShaderDataType::Float4, "a_Color"}};
         triangleVertexBuffer->SetLayout(layout);
-        m_VertexArray->AddVertexBuffer(triangleVertexBuffer);
+        m_TriangleVertexArray->AddVertexBuffer(triangleVertexBuffer);
 
         uint32_t indices[3] = {0, 1, 2};
         Ambient::Ref<Ambient::IndexBuffer> triangleIndexBuffer;
         triangleIndexBuffer.reset(Ambient::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
-        m_VertexArray->SetIndexBuffer(triangleIndexBuffer);
+        m_TriangleVertexArray->SetIndexBuffer(triangleIndexBuffer);
 
         /**
          * Draw a Square
          **/
 
         // clang-format off
-        float squareVertices[3 * 4] = {
-            -0.75f, -0.75f, 0.0f,
-            0.75f, -0.75f, 0.0f,
-            0.75f,  0.75f, 0.0f,
-            -0.75f,  0.75f, 0.0f
+        float squareVertices[5 * 4] = {
+            -0.75f, -0.75f, 0.0f, 0.0f, 0.0f,
+             0.75f, -0.75f, 0.0f, 1.0f, 0.0f,
+             0.75f,  0.75f, 0.0f, 1.0f, 1.0f,
+            -0.75f,  0.75f, 0.0f, 0.0f, 1.0f,
         };
         // clang-format on
 
@@ -55,7 +55,8 @@ class MyLayer : public Ambient::Layer
         Ambient::Ref<Ambient::VertexBuffer> squareVertexBuffer;
         squareVertexBuffer.reset(Ambient::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
 
-        Ambient::BufferLayout squareLayout = {{Ambient::ShaderDataType::Float3, "a_Position"}};
+        Ambient::BufferLayout squareLayout = {{Ambient::ShaderDataType::Float3, "a_Position"},
+                                              {Ambient::ShaderDataType::Float2, "a_TexCoord"}};
         squareVertexBuffer->SetLayout(squareLayout);
         m_SquareVertexArray->AddVertexBuffer(squareVertexBuffer);
 
@@ -64,87 +65,22 @@ class MyLayer : public Ambient::Layer
         squareIndexBuffer.reset(Ambient::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
         m_SquareVertexArray->SetIndexBuffer(squareIndexBuffer);
 
-        /*
-        Shaders
-        =======
+        m_FlatColor1Shader.reset(Ambient::Shader::Create("./assets/shaders/FlatColor1.glsl"));
+        m_FlatColor2Shader.reset(Ambient::Shader::Create("./assets/shaders/FlatColor2.glsl"));
+        m_TextureShader.reset(Ambient::OpenGLShader::Create("./assets/shaders/Texture.glsl"));
 
-        -> Vertex shader
-            -> Runs on the GPU for every vertex (point in 3D space)
-            -> Normalize vertices to the [-1, 1] space
-            -> Runs 3 times for the traingle example
+        // FlatColor1.glsl takes in no uniforms. Just Bind
+        // This also works without binding. Because Renderer::Submit calls shader->Bind()
+        // std::dynamic_pointer_cast<Ambient::OpenGLShader>(m_FlatColor1Shader)->Bind();
 
-        -> Fragment shader
-            -> Also called Pixel shader in other frameworks
-            -> Runs per pixel
-            -> Fills in the triangle
-        */
+        // Texture.glsl takes in a uniform u_Texture
+        // This also works without binding.
+        // TODO Figure out when binding is necessary
+        std::dynamic_pointer_cast<Ambient::OpenGLShader>(m_TextureShader)->Bind();
+        std::dynamic_pointer_cast<Ambient::OpenGLShader>(m_TextureShader)->UploadUniformInt("u_Texture", 0);
 
-        std::string vertexShaderSrc = R"(
-            #version 410 core
-
-            layout(location = 0) in vec3 a_Position;
-            layout(location = 1) in vec4 a_Color;
-
-            uniform mat4 u_ViewProjection;
-            uniform mat4 u_Transform;
-
-            out vec3 v_Position;
-            out vec4 v_Color;
-
-            void main() {
-                v_Position = a_Position;
-                v_Color = a_Color;
-                gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
-            }
-        )";
-
-        std::string fragmentShaderSrc = R"(
-            #version 410 core
-
-            layout(location = 0) out vec4 color;
-
-            in vec3 v_Position;
-            in vec4 v_Color;
-
-            void main() {
-                color = v_Color;
-            }
-        )";
-
-        m_Shader.reset(Ambient::Shader::Create(vertexShaderSrc, fragmentShaderSrc));
-        // instead of m_Shader = std::make_unique<Ambient::Shader::Create>()
-
-        std::string squareVertexShaderSrc = R"(
-            #version 410 core
-
-            layout(location = 0) in vec3 a_Position;
-
-            uniform mat4 u_ViewProjection;
-            uniform mat4 u_Transform;
-
-            out vec3 v_Position;
-
-            void main() {
-                v_Position = a_Position;
-                gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
-            }
-        )";
-
-        std::string squareFragmentShaderSrc = R"(
-            #version 410 core
-
-            layout(location = 0) out vec4 color;
-
-            in vec3 v_Position;
-            uniform vec4 u_Color;
-
-            void main() {
-                color = u_Color;
-            }
-        )";
-
-        m_SquareShader.reset(Ambient::Shader::Create(squareVertexShaderSrc, squareFragmentShaderSrc));
-        m_FlatColorShader.reset(Ambient::Shader::Create(squareVertexShaderSrc, squareFragmentShaderSrc));
+        std::string filepath = "./assets/batthern.png";
+        m_Texture = Ambient::Texture2D::Create(filepath);
     }
 
     void OnUpdate(Ambient::Timestep ts) override
@@ -217,12 +153,12 @@ class MyLayer : public Ambient::Layer
 
         glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.05f));
 
-        glm::vec4 red(0.8f, 0.2f, 0.2f, 1.0f);
-        glm::vec4 blue(0.2f, 0.2f, 0.8f, 1.0f);
+        // glm::vec4 red(0.8f, 0.2f, 0.2f, 1.0f);
+        // glm::vec4 blue(0.2f, 0.2f, 0.8f, 1.0f);
         glm::vec4 green(0.2f, 0.8f, 0.2f, 1.0f);
 
-        std::dynamic_pointer_cast<Ambient::OpenGLShader>(m_FlatColorShader)->Bind();
-        std::dynamic_pointer_cast<Ambient::OpenGLShader>(m_FlatColorShader)->UploadUniformFloat4("u_Color", red);
+        std::dynamic_pointer_cast<Ambient::OpenGLShader>(m_FlatColor2Shader)->Bind();
+        std::dynamic_pointer_cast<Ambient::OpenGLShader>(m_FlatColor2Shader)->UploadUniformFloat4("u_Color", green);
 
         for (int y = 0; y < 5; y++)
         {
@@ -230,12 +166,18 @@ class MyLayer : public Ambient::Layer
             {
                 glm::vec3 pos(x * 0.11f, y * 0.11f, 0.0f);
                 glm::mat4 transform = glm::translate(glm::mat4(1.0), pos) * scale;
-                Ambient::Renderer::Submit(m_FlatColorShader, m_SquareVertexArray, transform);
+                Ambient::Renderer::Submit(m_FlatColor2Shader, m_SquareVertexArray, transform);
             }
         }
 
-        Ambient::Renderer::Submit(m_Shader, m_VertexArray);
+        // Triangle
+        Ambient::Renderer::Submit(m_FlatColor1Shader, m_TriangleVertexArray);
         Ambient::Renderer::EndScene();
+
+        // Texture Square
+        scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f));
+        m_Texture->Bind();
+        Ambient::Renderer::Submit(m_TextureShader, m_SquareVertexArray, glm::mat4(1.0) * scale);
 
         Ambient::Renderer::Flush();
     }
@@ -245,12 +187,10 @@ class MyLayer : public Ambient::Layer
     }
 
   private:
-    Ambient::Ref<Ambient::Shader> m_FlatColorShader;
+    Ambient::Ref<Ambient::Shader> m_FlatColor1Shader, m_FlatColor2Shader, m_TextureShader;
+    Ambient::Ref<Ambient::Texture2D> m_Texture;
 
-    Ambient::Ref<Ambient::Shader> m_Shader;
-    Ambient::Ref<Ambient::VertexArray> m_VertexArray;
-
-    Ambient::Ref<Ambient::Shader> m_SquareShader;
+    Ambient::Ref<Ambient::VertexArray> m_TriangleVertexArray;
     Ambient::Ref<Ambient::VertexArray> m_SquareVertexArray;
 
     glm::vec3 m_SquarePosition;
