@@ -148,7 +148,7 @@ class MyLayer : public Ambient::Layer
         Ambient::Renderer::Flush();
     }
 
-    void OnEvent(Ambient::Event::Event& e) override
+    void OnEvent(Ambient::Event& e) override
     {
         m_CameraController.OnEvent(e);
     }
