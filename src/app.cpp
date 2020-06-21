@@ -5,7 +5,7 @@
 class MyLayer : public Ambient::Layer
 {
   public:
-    MyLayer() : Layer("My Layer"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f), m_CameraPosition(0.0f), m_SquarePosition(0.0f)
+    MyLayer() : Layer("My Layer"), m_CameraController(1280.0f / 720.0f, true)
     {
         /**
          * Draw a triangle
@@ -65,9 +65,9 @@ class MyLayer : public Ambient::Layer
         squareIndexBuffer.reset(Ambient::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
         m_SquareVertexArray->SetIndexBuffer(squareIndexBuffer);
 
-        m_FlatColor1Shader.reset(Ambient::Shader::Create("./assets/shaders/FlatColor1.glsl"));
-        m_FlatColor2Shader.reset(Ambient::Shader::Create("./assets/shaders/FlatColor2.glsl"));
-        m_TextureShader.reset(Ambient::OpenGLShader::Create("./assets/shaders/Texture.glsl"));
+        m_FlatColor1Shader = Ambient::Shader::Create("./assets/shaders/FlatColor1.glsl");
+        m_FlatColor2Shader = Ambient::Shader::Create("./assets/shaders/FlatColor2.glsl");
+        m_TextureShader = Ambient::OpenGLShader::Create("./assets/shaders/Texture.glsl");
 
         // FlatColor1.glsl takes in no uniforms. Just Bind
         // This also works without binding. Because Renderer::Submit calls shader->Bind()
@@ -86,70 +86,35 @@ class MyLayer : public Ambient::Layer
     void OnUpdate(Ambient::Timestep ts) override
     {
         float time = ts;
-        /**
-         * Position Control
-         **/
 
-        if (Ambient::Input::IsKeyPressed(AM_KEY_LEFT))
-        {
-            m_CameraPosition.x -= m_CameraSpeed * time;
-        }
-        else if (Ambient::Input::IsKeyPressed(AM_KEY_RIGHT))
-        {
-            m_CameraPosition.x += m_CameraSpeed * time;
-        }
-
-        if (Ambient::Input::IsKeyPressed(AM_KEY_UP))
-        {
-            m_CameraPosition.y += m_CameraSpeed * time;
-        }
-        else if (Ambient::Input::IsKeyPressed(AM_KEY_DOWN))
-        {
-            m_CameraPosition.y -= m_CameraSpeed * time;
-        }
+        m_CameraController.OnUpdate(ts);
 
         /**
          * Square Position Control
          **/
 
-        if (Ambient::Input::IsKeyPressed(AM_KEY_J))
+        if (Ambient::Input::IsKeyPressed(AM_KEY_LEFT))
         {
-            m_SquarePosition.x -= m_SquareSpeed * time;
+            m_TrianglePosition.x -= m_TriangleSpeed * time;
         }
-        else if (Ambient::Input::IsKeyPressed(AM_KEY_L))
+        else if (Ambient::Input::IsKeyPressed(AM_KEY_RIGHT))
         {
-            m_SquarePosition.x += m_SquareSpeed * time;
-        }
-
-        if (Ambient::Input::IsKeyPressed(AM_KEY_I))
-        {
-            m_SquarePosition.y += m_SquareSpeed * time;
-        }
-        else if (Ambient::Input::IsKeyPressed(AM_KEY_K))
-        {
-            m_SquarePosition.y -= m_SquareSpeed * time;
+            m_TrianglePosition.x += m_TriangleSpeed * time;
         }
 
-        /**
-         * Rotation Control
-         **/
-
-        if (Ambient::Input::IsKeyPressed(AM_KEY_A))
+        if (Ambient::Input::IsKeyPressed(AM_KEY_UP))
         {
-            m_CameraRotation += m_CameraRotationSpeed * time;
+            m_TrianglePosition.y += m_TriangleSpeed * time;
         }
-        else if (Ambient::Input::IsKeyPressed(AM_KEY_D))
+        else if (Ambient::Input::IsKeyPressed(AM_KEY_DOWN))
         {
-            m_CameraRotation -= m_CameraRotationSpeed * time;
+            m_TrianglePosition.y -= m_TriangleSpeed * time;
         }
 
         Ambient::RenderCommand::SetClearColor();
         Ambient::RenderCommand::Clear();
 
-        m_Camera.SetPosition(m_CameraPosition);
-        m_Camera.SetRotation(m_CameraRotation);
-
-        Ambient::Renderer::BeginScene(m_Camera);
+        Ambient::Renderer::BeginScene(m_CameraController.GetCamera());
 
         glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.05f));
 
@@ -171,7 +136,8 @@ class MyLayer : public Ambient::Layer
         }
 
         // Triangle
-        Ambient::Renderer::Submit(m_FlatColor1Shader, m_TriangleVertexArray);
+        Ambient::Renderer::Submit(m_FlatColor1Shader, m_TriangleVertexArray,
+                                  glm::translate(glm::mat4(1.0), m_TrianglePosition));
         Ambient::Renderer::EndScene();
 
         // Texture Square
@@ -182,21 +148,23 @@ class MyLayer : public Ambient::Layer
         Ambient::Renderer::Flush();
     }
 
-    void OnEvent(Ambient::Event::Event& event) override
+    void OnEvent(Ambient::Event::Event& e) override
     {
+        m_CameraController.OnEvent(e);
     }
 
   private:
+    // Ambient::ShaderLibrary m_ShaderLibrary;
     Ambient::Ref<Ambient::Shader> m_FlatColor1Shader, m_FlatColor2Shader, m_TextureShader;
     Ambient::Ref<Ambient::Texture2D> m_Texture;
 
     Ambient::Ref<Ambient::VertexArray> m_TriangleVertexArray;
     Ambient::Ref<Ambient::VertexArray> m_SquareVertexArray;
 
-    glm::vec3 m_SquarePosition;
-    float m_SquareSpeed = 3.0f;
+    glm::vec3 m_TrianglePosition;
+    float m_TriangleSpeed = 3.0f;
 
-    Ambient::OrthographicCamera m_Camera;
+    Ambient::OrthographicCameraController m_CameraController;
     glm::vec3 m_CameraPosition;
     float m_CameraRotation = 0.0f;
 
