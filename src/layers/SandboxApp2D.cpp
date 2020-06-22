@@ -21,30 +21,47 @@ void SandboxApp2D::OnUpdate(Ambient::Timestep ts)
     Ambient::RenderCommand::SetClearColor();
     Ambient::RenderCommand::Clear();
 
-    Ambient::Renderer2D::BeginScene(m_CameraController.GetCamera());
+    static float rotation = 0.0f;
+    rotation -= ts * 180.0f;
 
-    Ambient::Renderer2D::DrawQuad(
-            { -1.0f, 0.0f },
-            { 0.8f, 0.5f },
-            { 0.2f, 0.8f, 0.3f, 1.0f }
-    );
+    Ambient::Renderer2D::BeginScene(m_CameraController.GetCamera());
 
     Ambient::Renderer2D::DrawQuad(
             { 0.0f, 0.0f },
             { 1.0f, 1.0f },
+            { 0.2f, 0.8f, 0.3f, 1.0f }
+    );
+
+//    Ambient::Renderer2D::DrawQuad(
+//            { 0.0f, 0.0f },
+//            { 1.0f, 1.0f },
+//            { 0.8f, 0.2f, 0.3f, 1.0f }
+//    );
+//
+//    Ambient::Renderer2D::DrawQuad(
+//            { 0.0f, 0.0f, -0.5f },
+//            { 2.0f, 2.0f },
+//            m_Texture
+//    );
+//
+//    Ambient::Renderer2D::DrawQuad(
+//            { 0.0f, 0.0f, -0.1f },
+//            { 1.5f, 1.5f },
+//            { 0.1f, 0.8f, 0.8f, 1.0f }
+//    );
+
+    Ambient::Renderer2D::DrawRotatedQuad(
+            { 0.0f, 0.0f },
+            { 1.0f, 1.0f },
+            rotation,
             { 0.8f, 0.2f, 0.3f, 1.0f }
     );
 
-    Ambient::Renderer2D::DrawQuad(
-            { 0.0f, 0.0f, -0.5f },
-            { 2.0f, 2.0f },
+    Ambient::Renderer2D::DrawRotatedQuad(
+            { 0.0f, 0.0f, 0.5f },
+            { 1.0f, 1.0f },
+            rotation,
             m_Texture
-    );
-
-    Ambient::Renderer2D::DrawQuad(
-            { 0.0f, 0.0f, -0.1f },
-            { 1.5f, 1.5f },
-            { 0.1f, 0.8f, 0.8f, 1.0f }
     );
 
     Ambient::Renderer2D::EndScene();
