@@ -6,6 +6,7 @@ SandboxApp2D::SandboxApp2D() : Layer("Sandbox2D"), m_CameraController(1280.0f / 
 
 void SandboxApp2D::OnAttach()
 {
+    m_Texture = Ambient::Texture2D::Create("../../assets/batthern.png");
 }
 
 void SandboxApp2D::OnDetach()
@@ -23,9 +24,27 @@ void SandboxApp2D::OnUpdate(Ambient::Timestep ts)
     Ambient::Renderer2D::BeginScene(m_CameraController.GetCamera());
 
     Ambient::Renderer2D::DrawQuad(
+            { -1.0f, 0.0f },
+            { 0.8f, 0.5f },
+            { 0.2f, 0.8f, 0.3f, 1.0f }
+    );
+
+    Ambient::Renderer2D::DrawQuad(
             { 0.0f, 0.0f },
             { 1.0f, 1.0f },
             { 0.8f, 0.2f, 0.3f, 1.0f }
+    );
+
+    Ambient::Renderer2D::DrawQuad(
+            { 0.0f, 0.0f, -0.5f },
+            { 2.0f, 2.0f },
+            m_Texture
+    );
+
+    Ambient::Renderer2D::DrawQuad(
+            { 0.0f, 0.0f, -0.1f },
+            { 1.5f, 1.5f },
+            { 0.1f, 0.8f, 0.8f, 1.0f }
     );
 
     Ambient::Renderer2D::EndScene();
