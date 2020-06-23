@@ -1,6 +1,7 @@
 #include "Ambient.h"
 // #include "layers/SquareAndTriangle.h"
-#include "layers/SandboxApp2D.h"
+// #include "layers/SandboxApp2D.h"
+#include "Platformer2D.h"
 
 #include "EntryPoint.h"
 
@@ -10,7 +11,8 @@ public:
     SandboxApp()
     {
         // PushLayer(new SquareAndTriangleLayer());
-        PushLayer(new SandboxApp2D());
+        // PushLayer(new SandboxApp2D());
+        PushLayer(new Platformer2D());
     }
 
     ~SandboxApp()
