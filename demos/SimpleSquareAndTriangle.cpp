@@ -1,68 +1,54 @@
-#include "layers/SquareAndTriangle.h"
+#include "SimpleSquareAndTriangle.h"
 
-SquareAndTriangleLayer::SquareAndTriangleLayer() : Layer("My Layer"), m_CameraController(1280.0f / 720.0f)
+SimpleSquareAndTriangle::SimpleSquareAndTriangle()
+        : Layer("Simple Square And Triangle"), m_CameraController(1280.0f / 720.0f)
 {
-    /**
-     * Draw a triangle
-     * => Create a VertexArray
-     * => Create a VertexBuffer and IndexBuffer
-     * => Add the VertexBuffer and IndexBuffer to the VertexArray
-     **/
-
-    // clang-format off
-    float triangleVertices[3 * 7] = {
+    float triangle_vertices[3 * 7] = {
             -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
             0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
             0.0f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
     };
-    // clang-format on
 
     m_TriangleVertexArray = Ambient::VertexArray::Create();
 
-    Ambient::Ref<Ambient::VertexBuffer> triangleVertexBuffer;
-    triangleVertexBuffer = Ambient::VertexBuffer::Create(triangleVertices, sizeof(triangleVertices));
+    Ambient::Ref<Ambient::VertexBuffer> triangle_vb;
+    triangle_vb = Ambient::VertexBuffer::Create(triangle_vertices, sizeof(triangle_vertices));
 
     Ambient::BufferLayout layout = {{ Ambient::ShaderDataType::Float3, "a_Position" },
                                     { Ambient::ShaderDataType::Float4, "a_Color" }};
-    triangleVertexBuffer->SetLayout(layout);
-    m_TriangleVertexArray->AddVertexBuffer(triangleVertexBuffer);
+    triangle_vb->SetLayout(layout);
+    m_TriangleVertexArray->AddVertexBuffer(triangle_vb);
 
     uint32_t indices[3] = { 0, 1, 2 };
-    Ambient::Ref<Ambient::IndexBuffer> triangleIndexBuffer;
-    triangleIndexBuffer = Ambient::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t));
-    m_TriangleVertexArray->SetIndexBuffer(triangleIndexBuffer);
+    Ambient::Ref<Ambient::IndexBuffer> triangle_ib;
+    triangle_ib = Ambient::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t));
+    m_TriangleVertexArray->SetIndexBuffer(triangle_ib);
 
-    /**
-     * Draw a Square
-     **/
-
-    // clang-format off
-    float squareVertices[5 * 4] = {
+    float square_vertices[5 * 4] = {
             -0.75f, -0.75f, 0.0f, 0.0f, 0.0f,
             0.75f, -0.75f, 0.0f, 1.0f, 0.0f,
             0.75f, 0.75f, 0.0f, 1.0f, 1.0f,
             -0.75f, 0.75f, 0.0f, 0.0f, 1.0f,
     };
-    // clang-format on
 
     m_SquareVertexArray = Ambient::VertexArray::Create();
 
-    Ambient::Ref<Ambient::VertexBuffer> squareVertexBuffer;
-    squareVertexBuffer = Ambient::VertexBuffer::Create(squareVertices, sizeof(squareVertices));
+    Ambient::Ref<Ambient::VertexBuffer> square_vb;
+    square_vb = Ambient::VertexBuffer::Create(square_vertices, sizeof(square_vertices));
 
     Ambient::BufferLayout squareLayout = {{ Ambient::ShaderDataType::Float3, "a_Position" },
                                           { Ambient::ShaderDataType::Float2, "a_TexCoord" }};
-    squareVertexBuffer->SetLayout(squareLayout);
-    m_SquareVertexArray->AddVertexBuffer(squareVertexBuffer);
+    square_vb->SetLayout(squareLayout);
+    m_SquareVertexArray->AddVertexBuffer(square_vb);
 
     uint32_t squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
-    Ambient::Ref<Ambient::IndexBuffer> squareIndexBuffer;
-    squareIndexBuffer = Ambient::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t));
-    m_SquareVertexArray->SetIndexBuffer(squareIndexBuffer);
+    Ambient::Ref<Ambient::IndexBuffer> square_ib;
+    square_ib = Ambient::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t));
+    m_SquareVertexArray->SetIndexBuffer(square_ib);
 
-    m_FlatColor1Shader = Ambient::Shader::Create("./assets/shaders/FlatColor1.glsl");
-    m_FlatColor2Shader = Ambient::Shader::Create("./assets/shaders/FlatColor2.glsl");
-    m_TextureShader = Ambient::OpenGLShader::Create("./assets/shaders/Texture.glsl");
+    m_FlatColor1Shader = Ambient::Shader::Create("./../../assets/shaders/FlatColor1.glsl");
+    m_FlatColor2Shader = Ambient::Shader::Create("./../../assets/shaders/FlatColor2.glsl");
+    m_TextureShader = Ambient::OpenGLShader::Create("./../../assets/shaders/Texture.glsl");
 
     // FlatColor1.glsl takes in no uniforms. Just Bind
     // This also works without binding. Because Renderer::Submit calls shader->Bind()
@@ -74,19 +60,15 @@ SquareAndTriangleLayer::SquareAndTriangleLayer() : Layer("My Layer"), m_CameraCo
     std::dynamic_pointer_cast<Ambient::OpenGLShader>(m_TextureShader)->Bind();
     std::dynamic_pointer_cast<Ambient::OpenGLShader>(m_TextureShader)->UploadUniformInt("u_Texture", 0);
 
-    std::string filepath = "./assets/batthern.png";
+    std::string filepath = "./../../assets/textures/batthern.png";
     m_Texture = Ambient::Texture2D::Create(filepath);
 }
 
-void SquareAndTriangleLayer::OnUpdate(Ambient::Timestep ts)
+void SimpleSquareAndTriangle::OnUpdate(Ambient::Timestep ts)
 {
     float time = ts;
 
     m_CameraController.OnUpdate(ts);
-
-    /**
-     * Square Position Control
-     **/
 
     if (Ambient::Input::IsKeyPressed(AM_KEY_LEFT))
     {
@@ -143,7 +125,7 @@ void SquareAndTriangleLayer::OnUpdate(Ambient::Timestep ts)
     Ambient::Renderer::Flush();
 }
 
-void SquareAndTriangleLayer::OnEvent(Ambient::Event& e)
+void SimpleSquareAndTriangle::OnEvent(Ambient::Event& e)
 {
     m_CameraController.OnEvent(e);
 }

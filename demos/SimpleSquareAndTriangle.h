@@ -1,12 +1,17 @@
-#pragma once
+//
+// Created by Prajwal Prakash on 23/06/20.
+//
+
+#ifndef SANDBOX_SIMPLESQUAREANDTRIANGLE_H
+#define SANDBOX_SIMPLESQUAREANDTRIANGLE_H
 
 #include "Ambient.h"
 #include "glm/gtc/matrix_transform.hpp"
 
-class SquareAndTriangleLayer : public Ambient::Layer
+class SimpleSquareAndTriangle : public Ambient::Layer
 {
 public:
-    SquareAndTriangleLayer();
+    SimpleSquareAndTriangle();
 
     void OnUpdate(Ambient::Timestep ts) override;
 
@@ -30,3 +35,5 @@ private:
     float m_CameraSpeed = 5.0f;          // 5 units per second
     float m_CameraRotationSpeed = 90.0f; // 90 degrees per second
 };
+
+#endif //SANDBOX_SIMPLESQUAREANDTRIANGLE_H

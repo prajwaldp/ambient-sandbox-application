@@ -14,11 +14,12 @@ include(../Engine/build/conanbuildinfo.cmake)  # Includes the contents of the co
 conan_basic_setup(KEEP_RPATHS)  # This is a macro defined in the above file
 
 add_executable(app
-        src/App.cpp
-        src/Platformer2D.cpp
-        src/layers/SquareAndTriangle.cpp
-        src/layers/SandboxApp2D.cpp)
+        App.cpp
+        demos/Platformer2D.cpp
+        demos/SimpleSquareAndTriangle.cpp
+        demos/RotatingQuad.cpp
+        demos/RPGWorld.cpp)
 
-target_include_directories(app PUBLIC ../Engine/include/ ./include/ ./src/)
+target_include_directories(app PUBLIC ../Engine/include/ ./demos/)
 target_link_directories(app PUBLIC ../Engine/build/lib)
 target_link_libraries(app ambient ${CONAN_LIBS})

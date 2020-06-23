@@ -1,21 +1,20 @@
-#include "layers/SandboxApp2D.h"
+#include "RotatingQuad.h"
 
-SandboxApp2D::SandboxApp2D() : Layer("Sandbox2D"), m_CameraController(1280.0f / 720.0f)
+RotatingQuad::RotatingQuad() : Layer("RotatingQuad"), m_CameraController(1280.0f / 720.0f)
 {
 }
 
-void SandboxApp2D::OnAttach()
+void RotatingQuad::OnAttach()
 {
-    m_Texture = Ambient::Texture2D::Create("../../assets/batthern.png");
+    m_Texture = Ambient::Texture2D::Create("./../../assets/textures/batthern.png");
 }
 
-void SandboxApp2D::OnDetach()
+void RotatingQuad::OnDetach()
 {
 }
 
-void SandboxApp2D::OnUpdate(Ambient::Timestep ts)
+void RotatingQuad::OnUpdate(Ambient::Timestep ts)
 {
-    float time = ts;
     m_CameraController.OnUpdate(ts);
 
     Ambient::RenderCommand::SetClearColor();
@@ -50,7 +49,7 @@ void SandboxApp2D::OnUpdate(Ambient::Timestep ts)
     Ambient::Renderer2D::EndScene();
 }
 
-void SandboxApp2D::OnEvent(Ambient::Event& e)
+void RotatingQuad::OnEvent(Ambient::Event& e)
 {
     m_CameraController.OnEvent(e);
 }
