@@ -23,7 +23,7 @@ public:
 
 private:
     Ambient::OrthographicCameraController m_CameraController;
-    Ambient::Ref<Ambient::Texture2D> m_SpriteSheet;
+    Ambient::Ref<Ambient::TextureAtlas2D> m_TextureAtlas;
 
     std::unordered_map<char, Ambient::Ref<Ambient::SubTexture2D>> m_TextureMap;
 };
