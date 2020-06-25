@@ -1,7 +1,8 @@
 #include "Ambient.h"
 
 
-#include "demos/Platformer2D.h"
+#include "demos/ParticleSystem.h"
+#include "PlatformGame2D/PlatformGame2D.h"
 #include "demos/RotatingQuad.h"
 #include "demos/RPGWorld.h"
 #include "demos/SimpleSquareAndTriangle.h"
@@ -15,9 +16,10 @@ class SandboxApp : public Ambient::Application
 public:
     SandboxApp()
     {
-        // PushLayer(new Platformer2D());
+        // PushLayer(new ParticleSystem());
+        PushLayer(new PlatformGame2D());
         // PushLayer(new RotatingQuad());
-        PushLayer(new RPGWorld());
+        // PushLayer(new RPGWorld());
         // PushLayer(new SimpleSquareAndTriangle());
     }
 

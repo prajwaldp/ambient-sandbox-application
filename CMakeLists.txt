@@ -15,10 +15,10 @@ conan_basic_setup(KEEP_RPATHS)  # This is a macro defined in the above file
 
 add_executable(app
         App.cpp
-        demos/Platformer2D.cpp
+        demos/PlatformGame2D/PlatformGame2D.cpp
         demos/SimpleSquareAndTriangle.cpp
         demos/RotatingQuad.cpp
-        demos/RPGWorld.cpp)
+        demos/RPGWorld.cpp demos/ParticleSystem.cpp demos/ParticleSystem.h demos/PlatformGame2D/LevelManager.cpp demos/PlatformGame2D/LevelManager.h demos/PlatformGame2D/Player.cpp demos/PlatformGame2D/Player.h)
 
 target_include_directories(app PUBLIC ../Engine/include/ ./demos/)
 target_link_directories(app PUBLIC ../Engine/build/lib)
