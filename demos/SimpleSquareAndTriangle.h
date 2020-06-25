@@ -13,7 +13,7 @@ class SimpleSquareAndTriangle : public Ambient::Layer
 public:
     SimpleSquareAndTriangle();
 
-    void OnUpdate(Ambient::Timestep ts) override;
+    void OnUpdate(Ambient::TimeStep ts) override;
 
     void OnEvent(Ambient::Event& e) override;
 

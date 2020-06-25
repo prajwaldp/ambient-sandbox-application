@@ -13,7 +13,7 @@ void RotatingQuad::OnDetach()
 {
 }
 
-void RotatingQuad::OnUpdate(Ambient::Timestep ts)
+void RotatingQuad::OnUpdate(Ambient::TimeStep ts)
 {
     m_CameraController.OnUpdate(ts);
 
@@ -21,7 +21,7 @@ void RotatingQuad::OnUpdate(Ambient::Timestep ts)
     Ambient::RenderCommand::Clear();
 
     static float rotation = 0.0f;
-    rotation -= ts * 180.0f;
+    rotation -= float(ts) * 180.0f;
 
     Ambient::Renderer2D::ResetStats();
     Ambient::Renderer2D::BeginScene(m_CameraController.GetCamera());

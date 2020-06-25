@@ -64,9 +64,9 @@ SimpleSquareAndTriangle::SimpleSquareAndTriangle()
     m_Texture = Ambient::Texture2D::Create(filepath);
 }
 
-void SimpleSquareAndTriangle::OnUpdate(Ambient::Timestep ts)
+void SimpleSquareAndTriangle::OnUpdate(Ambient::TimeStep ts)
 {
-    float time = ts;
+    float time = float(ts);
 
     m_CameraController.OnUpdate(ts);
 

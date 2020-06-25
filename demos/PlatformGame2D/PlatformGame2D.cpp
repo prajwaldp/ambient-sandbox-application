@@ -1,7 +1,6 @@
 #include "PlatformGame2D.h"
 #include "LevelManager.h"
 
-#include <math.h>
 #include <memory>
 
 
@@ -27,7 +26,7 @@ void PlatformGame2D::OnAttach()
 
     m_CharacterTextureAtlas.reset(new Ambient::TextureAtlas2D(character_sprite_sheet, { 96.0f, 128.0f }));
 
-    m_TextureMap['.'] = m_WorldTextureAtlas->GetSubTexture(4, 15, 1, 1);
+    m_TextureMap['.'] = m_WorldTextureAtlas->GetSubTexture(4, 16, 1, 1);
     m_TextureMap['#'] = m_WorldTextureAtlas->GetSubTexture(3, 11, 1, 1);
     m_TextureMap['P'] = m_CharacterTextureAtlas->GetSubTexture(0, 4, 1, 1);
 }
@@ -36,7 +35,7 @@ void PlatformGame2D::OnDetach()
 {
 }
 
-void PlatformGame2D::OnUpdate(Ambient::Timestep ts)
+void PlatformGame2D::OnUpdate(Ambient::TimeStep ts)
 {
     const float gravity = 0.2f;
 

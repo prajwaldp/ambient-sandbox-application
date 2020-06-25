@@ -56,7 +56,7 @@ void RPGWorld::OnDetach()
 {
 }
 
-void RPGWorld::OnUpdate(Ambient::Timestep ts)
+void RPGWorld::OnUpdate(Ambient::TimeStep ts)
 {
     m_CameraController.OnUpdate(ts);
 

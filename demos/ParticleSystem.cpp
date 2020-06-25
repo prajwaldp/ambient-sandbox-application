@@ -66,7 +66,7 @@ void ParticleSystem::OnEvent(Ambient::Event& e)
 {
 }
 
-void ParticleSystem::OnUpdate(Ambient::Timestep ts)
+void ParticleSystem::OnUpdate(Ambient::TimeStep ts)
 {
     Ambient::RenderCommand::SetClearColor();
     Ambient::RenderCommand::Clear();
